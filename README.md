@@ -182,7 +182,7 @@ POST /api/v1/admin/trips
 
 ## TODO
 
-- [ ] Repositories
+- [x] Repositories
 - [ ] Services (booking flow, seat locking, payment, expiry scheduler)
 - [ ] Controllers
 - [ ] DTOs and request/response models
