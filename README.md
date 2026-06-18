@@ -199,7 +199,3 @@ POST /api/v1/admin/trips
 The schema is intentionally Hibernate-managed (`ddl-auto: update`) to keep iteration fast during early development review this before any production deployment.
 
 Auth is HTTP Basic for now. The integration team will own the authentication layer once active development begins.
-
----
-
-*This is proprietary software. Not for distribution.*
