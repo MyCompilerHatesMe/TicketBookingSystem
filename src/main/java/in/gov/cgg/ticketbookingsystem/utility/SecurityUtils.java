@@ -1,4 +1,4 @@
-package utility;
+package in.gov.cgg.ticketbookingsystem.utility;
 
 import in.gov.cgg.ticketbookingsystem.model.Role;
 import in.gov.cgg.ticketbookingsystem.security.SecurityUser;
