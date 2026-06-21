@@ -1,8 +1,19 @@
 package in.gov.cgg.ticketbookingsystem.controller;
 
+import in.gov.cgg.ticketbookingsystem.model.dto.request.BusRequest;
+import in.gov.cgg.ticketbookingsystem.model.dto.request.RouteRequest;
+import in.gov.cgg.ticketbookingsystem.model.dto.request.TripRequest;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.BusResponse;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteResponse;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.TripResponse;
 import in.gov.cgg.ticketbookingsystem.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,5 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminController {
+
     private final AdminService service;
+
+    @PostMapping("/buses")
+    public ResponseEntity<BusResponse> addBus(@Valid @RequestBody BusRequest busRequest) {
+        BusResponse response = service.addBus(busRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/routes")
+    public ResponseEntity<RouteResponse> addRoute(@Valid @RequestBody RouteRequest routeRequest) {
+        RouteResponse response = service.addRoute(routeRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/trips")
+    public ResponseEntity<TripResponse> addTrip(@Valid @RequestBody TripRequest tripRequest) {
+        TripResponse response = service.addTrip(tripRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }

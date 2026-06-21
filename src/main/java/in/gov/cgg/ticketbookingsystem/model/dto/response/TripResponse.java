@@ -1,0 +1,18 @@
+package in.gov.cgg.ticketbookingsystem.model.dto.response;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+public record TripResponse (
+        Long tripId,
+        Long busId,
+        String busNumber,
+        String busName,
+        Long routeId,
+        String sourceCity,
+        String destinationCity,
+        LocalDateTime startTime,
+        LocalDateTime arrivalTime,
+        BigDecimal fare
+)
+{}

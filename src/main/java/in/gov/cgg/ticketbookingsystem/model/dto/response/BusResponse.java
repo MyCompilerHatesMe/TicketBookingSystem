@@ -5,6 +5,7 @@ import in.gov.cgg.ticketbookingsystem.model.core.Seat;
 import java.util.List;
 
 public record BusResponse (
+        Integer busId,
         String busNumber,
         String busName,
         String busType,
