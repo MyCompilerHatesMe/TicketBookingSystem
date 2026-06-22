@@ -7,9 +7,11 @@ import in.gov.cgg.ticketbookingsystem.model.dto.request.BusRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.RouteRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.TripRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.BusResponse;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.RegisterResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.TripResponse;
 import in.gov.cgg.ticketbookingsystem.model.operations.TripSchedule;
+import in.gov.cgg.ticketbookingsystem.model.users.AuthUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -31,6 +33,13 @@ public interface DtoMapper {
     @Mapping(target = "tripId", ignore = true)
     TripSchedule toEntity(TripRequest tripRequest);
 
+    @Mapping(target = "busId", source = "tripSchedule.bus.busId")
+    @Mapping(target = "busNumber", source = "tripSchedule.bus.busNumber")
+    @Mapping(target = "busName", source = "tripSchedule.bus.busName")
+    @Mapping(target = "routeId", source = "tripSchedule.route.routeId")
+    @Mapping(target = "sourceCity", source = "tripSchedule.route.sourceCity")
+    @Mapping(target = "destinationCity", source = "tripSchedule.route.destinationCity")
     TripResponse toResponse(TripSchedule tripSchedule);
 
+    RegisterResponse toResponse(AuthUser saved);
 }

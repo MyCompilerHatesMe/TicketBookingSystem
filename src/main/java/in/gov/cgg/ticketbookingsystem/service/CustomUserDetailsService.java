@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private AuthUserRepo authUserRepo;
+    private final AuthUserRepo authUserRepo;
 
     @Override
     @NullMarked
@@ -21,5 +21,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(SecurityUser::new)
                 .orElseThrow(() -> new UserNotFoundException(username));
     }
-
 }

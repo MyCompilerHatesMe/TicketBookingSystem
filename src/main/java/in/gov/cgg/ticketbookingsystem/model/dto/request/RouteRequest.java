@@ -7,7 +7,7 @@ public record RouteRequest (
         @NotBlank(message = "[TripRequest]: Source City cannot be blank")
         String sourceCity,
         @NotBlank(message = "[TripRequest]: Destination City cannot be blank")
-        String destCity,
+        String destinationCity,
         @Positive(message = "[TripRequest]: Distance between source and destination must be positive")
         int distanceKm
 )

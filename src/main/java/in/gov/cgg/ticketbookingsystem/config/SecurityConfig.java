@@ -31,13 +31,13 @@ public class SecurityConfig {
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
                     config.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE", "OPTIONS"));
-                    return config;
+                    return config; //cors for a local vue app
                 }))
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         request.requestMatchers("/auth/register", "/error", "/auth/login").permitAll()
                                 .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults()) //basic auth
                 .build();
     }
 
