@@ -1,5 +1,6 @@
 package in.gov.cgg.ticketbookingsystem.config;
 
+import in.gov.cgg.ticketbookingsystem.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +11,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtFilter jwtFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity security) {
         return security
@@ -35,9 +40,12 @@ public class SecurityConfig {
                 }))
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers("/auth/register", "/error", "/auth/login").permitAll()
+                        request.requestMatchers("/auth/register", "/error", "/auth/login", "/trips/**", "/bookings/**").permitAll()
                                 .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults()) //basic auth
+
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
 

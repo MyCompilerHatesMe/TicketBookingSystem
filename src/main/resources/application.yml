@@ -19,3 +19,7 @@ logging:
     org:
       springframework:
         security: "DEBUG"
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}

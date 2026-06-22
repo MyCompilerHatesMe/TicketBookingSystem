@@ -11,6 +11,9 @@ import in.gov.cgg.ticketbookingsystem.model.operations.TripSeat;
 import in.gov.cgg.ticketbookingsystem.model.transactions.Booking;
 import in.gov.cgg.ticketbookingsystem.model.users.UserGuest;
 import in.gov.cgg.ticketbookingsystem.model.users.UserMaster;
+import in.gov.cgg.ticketbookingsystem.model.users.AuthUser;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import in.gov.cgg.ticketbookingsystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class BookingService {
     private final TripScheduleRepo tripScheduleRepo;
     private final UserMasterRepo userMasterRepo;
     private final UserGuestRepo userGuestRepo;
+    private final AuthUserRepo authUserRepo;
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
@@ -54,11 +58,31 @@ public class BookingService {
                         return userGuestRepo.save(newGuest);
                     });
         } else {
-            if (request.userId() == null) {
-                throw new IllegalArgumentException("User ID is missing.");
+            if (request.userId() != null) {
+                userMaster = userMasterRepo.findById(request.userId())
+                        .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.userId()));
+            } else {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || !authentication.isAuthenticated()) {
+                    throw new RuntimeException("User is not authenticated");
+                }
+                String username = authentication.getName();
+                AuthUser authUser = authUserRepo.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("Authenticated user not found in auth user repository: " + username));
+                
+                userMaster = authUser.getUserMaster();
+                if (userMaster == null) {
+                    userMaster = new UserMaster();
+                    String email = username.contains("@") ? username : username + "@example.com";
+                    userMaster.setEmail(email);
+                    userMaster.setName(username);
+                    userMaster.setCreatedOn(LocalDateTime.now());
+                    userMaster = userMasterRepo.save(userMaster);
+                    
+                    authUser.setUserMaster(userMaster);
+                    authUserRepo.save(authUser);
+                }
             }
-            userMaster = userMasterRepo.findById(request.userId())
-                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.userId()));
         }
 
         List<TripSeat> tripSeats = tripSeatRepo.findSeatsForUpdate(request.tripId(), request.seatIds());

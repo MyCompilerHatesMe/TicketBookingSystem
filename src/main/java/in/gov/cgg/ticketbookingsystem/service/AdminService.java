@@ -95,4 +95,18 @@ public class AdminService {
 
         return dtoMapper.toResponse(savedTrip);
     }
+
+    public List<BusResponse> getAllBuses () {
+        // yes, this returns null for the seats, shouldn't matter
+        return busRepo.findAll().stream().map((bus) -> dtoMapper.toResponse(bus, null)).toList();
+    }
+
+    public List<RouteResponse> getAllRoutes () {
+        return routeRepo.findAll().stream().map(dtoMapper::toResponse).toList();
+    }
+
+    public List<TripResponse> getAllTrips () {
+        return tripScheduleRepo.findAll().stream().map(dtoMapper::toResponse).toList();
+    }
+
 }

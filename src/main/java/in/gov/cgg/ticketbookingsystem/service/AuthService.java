@@ -2,6 +2,7 @@ package in.gov.cgg.ticketbookingsystem.service;
 
 import in.gov.cgg.ticketbookingsystem.exception.UsernameExistsException;
 import in.gov.cgg.ticketbookingsystem.model.Role;
+import in.gov.cgg.ticketbookingsystem.model.dto.request.LoginRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.RegisterRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.RegisterResponse;
 import in.gov.cgg.ticketbookingsystem.model.users.AuthUser;
@@ -29,7 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     private final DtoMapper mapper;
-    private final ApplicationEventPublisher publisher;
+    private final JwtService jwtService;
 
     //basic auth. change to JWT/OAuth2
     @Transactional
@@ -57,5 +58,21 @@ public class AuthService {
         }
 
         return mapper.toResponse(saved);
+    }
+
+    public String login (LoginRequest request) {
+        try {
+            Authentication auth = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.name(), request.password())
+            );
+            return jwtService.generateToken(
+                    request.name(),
+                    // authUser will never be null, auth guarantees a "fully authenticated object"
+                    // or AuthenticationException.
+                    ((SecurityUser) auth.getPrincipal()).authUser().getRoles()
+            );
+        } catch (AuthenticationException e) {
+            throw new BadCredentialsException("Invalid Credentials");
+        }
     }
 }

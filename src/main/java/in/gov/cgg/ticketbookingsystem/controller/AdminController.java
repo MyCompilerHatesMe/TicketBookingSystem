@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -41,5 +40,20 @@ public class AdminController {
     public ResponseEntity<TripResponse> addTrip(@Valid @RequestBody TripRequest tripRequest) {
         TripResponse response = service.addTrip(tripRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/buses")
+    public ResponseEntity<List<BusResponse>> getAllBus() {
+        return new ResponseEntity<>(service.getAllBuses(), HttpStatus.OK);
+    }
+
+    @GetMapping("/routes")
+    public ResponseEntity<List<RouteResponse>> getAllRoutes() {
+        return new ResponseEntity<>(service.getAllRoutes(), HttpStatus.OK);
+    }
+
+    @GetMapping("/trips")
+    public ResponseEntity<List<TripResponse>> getAllTrips() {
+        return new ResponseEntity<>(service.getAllTrips(), HttpStatus.OK);
     }
 }

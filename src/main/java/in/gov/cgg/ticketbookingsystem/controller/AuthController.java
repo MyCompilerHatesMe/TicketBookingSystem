@@ -1,5 +1,6 @@
 package in.gov.cgg.ticketbookingsystem.controller;
 
+import in.gov.cgg.ticketbookingsystem.model.dto.request.LoginRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.RegisterRequest;
 import in.gov.cgg.ticketbookingsystem.service.AuthService;
 import jakarta.validation.Valid;
@@ -20,6 +21,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
         return ResponseEntity.ok(service.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
+        return ResponseEntity.ok(service.login(request));
     }
 
 }
