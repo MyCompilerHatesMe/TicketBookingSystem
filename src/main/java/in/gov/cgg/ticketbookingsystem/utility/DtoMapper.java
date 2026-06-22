@@ -30,12 +30,10 @@ public interface DtoMapper {
 
     RouteResponse toResponse(Route route);
 
-    @Mapping(target = "tripId", ignore = true)
-    TripSchedule toEntity(TripRequest tripRequest);
-
     @Mapping(target = "busId", source = "tripSchedule.bus.busId")
     @Mapping(target = "busNumber", source = "tripSchedule.bus.busNumber")
     @Mapping(target = "busName", source = "tripSchedule.bus.busName")
+    @Mapping(target = "busType", source = "tripSchedule.bus.busType")
     @Mapping(target = "routeId", source = "tripSchedule.route.routeId")
     @Mapping(target = "sourceCity", source = "tripSchedule.route.sourceCity")
     @Mapping(target = "destinationCity", source = "tripSchedule.route.destinationCity")

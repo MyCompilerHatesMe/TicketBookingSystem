@@ -8,6 +8,7 @@ public record TripResponse (
         Long busId,
         String busNumber,
         String busName,
+        String busType,
         Long routeId,
         String sourceCity,
         String destinationCity,
