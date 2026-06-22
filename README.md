@@ -1,201 +1,237 @@
-# TicketBookingSystem
+# Ticket Booking System (TBS)
 
-A bus ticket booking backend built with Spring Boot. Supports registered users and guest checkouts, seat locking with pessimistic locking, expiring booking holds via `@Scheduled`, and async email notifications.
-
----
-
-## Tech Stack
-
-| Layer     | Technology                  |
-|-----------|-----------------------------|
-| Language  | Java 17                     |
-| Framework | Spring Boot 4.1.0           |
-| Database  | PostgreSQL 14.23            |
-| ORM       | Spring Data JPA / Hibernate |
-| Auth      | HTTP Basic Auth             |
-| Build     | Gradle 9.5.1                |
+A complete, modern bus ticket booking application featuring a Spring Boot Java backend, PostgreSQL database, and a React Vite frontend. Supports guest checkout, pessimistic seat locking, scheduling automated holds release, and JWT-based admin controls.
 
 ---
 
-## Prerequisites
+## Repository Structure
 
-- JDK 17
-- PostgreSQL 14.23 running locally (or via Docker)
-- Gradle 9.5.1
+```
+TicketBookingSystem/
+├── backend/               # Spring Boot Application (API Server)
+│   ├── src/               # Source code (Java)
+│   ├── build.gradle       # Gradle Build configuration
+│   └── ...
+├── TicketSystemFront/     # React + Vite client (Admin & Passenger UI)
+│   ├── src/               # Source code (React components & logic)
+│   ├── package.json       # Node package configuration
+│   └── ...
+└── README.md              # Project documentation
+```
+
+---
+
+## Technology Stack
+
+### Backend
+- **Language & Runtime:** Java 17
+- **Framework:** Spring Boot 4.x
+- **Security:** Spring Security (HTTP Basic Auth & Stateless JWT Verification)
+- **Database:** PostgreSQL 14.x
+- **Persistence:** Spring Data JPA / Hibernate (DDL updates auto-managed)
+- **Build System:** Gradle 9.x
+
+### Frontend
+- **Framework:** React 19 (Vite)
+- **Styling:** Vanilla CSS modules (Navy & Saffron themed layout)
+- **State Management:** In-memory JWT context & LocalStorage token syncing
+- **Build Tool:** Vite 8.x
 
 ---
 
 ## Getting Started
 
-```bash
-git clone https://github.com/MyCompilerHatesMe/TicketBookingSystem.git
-cd TicketBookingSystem
-./gradlew bootRun --args='--spring.datasource.url=jdbc:postgresql://localhost:5432/ticket_booking --spring.datasource.username=your_user --spring.datasource.password=your_password'
-```
-
-> Credentials are not read from a `.env` file. Pass them as command-line arguments as shown above, or set them in your shell before running.
+### Prerequisites
+- **Java JDK 17** or higher
+- **Node.js** (v18+ recommended) & npm
+- **PostgreSQL** database running locally (default port: 5432)
 
 ---
 
-## Configuration
+### 1. Setting Up the Backend
 
-```yaml
-# src/main/resources/application.yaml
-spring:
-  application:
-    name: "TicketBookingSystem"
-  datasource:
-    url: ${DB_URL}
-    password: ${DB_PASSWORD}
-    username: ${DB_USERNAME}
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-```
+1. **Create the Database:**
+   Connect to your PostgreSQL server and create a database named `ticket_booking`:
+   ```sql
+   CREATE DATABASE ticket_booking;
+   ```
 
-Schema is Hibernate-managed. No manual DDL required.
+2. **Configure Database Secrets:**
+   Set the following environment variables in your terminal before running:
+   - `DB_URL`: `jdbc:postgresql://localhost:5432/ticket_booking`
+   - `DB_USERNAME`: `your_postgres_username`
+   - `DB_PASSWORD`: `your_postgres_password`
+   - `JWT_SECRET_KEY`: A secure key containing at least 32 characters (e.g. `mySuperSecureSecretJwtKeyStringNeedToBeLong`)
 
----
-
-## Database Schema
-
-Entities are grouped into four logical layers. All string fields are mapped as `String` in Java. Hibernate handles the column types. The two user tables coexist: `UserMaster` for registered accounts, `UserGuest` for anonymous bookings.
-
-### Master Data
-
-**Bus**
-- `bus_id` - `Long` PK
-- `bus_number` - `String`
-- `bus_name` - `String`
-- `bus_type` - `String`
-- `total_seats` - `int`
-
-**Seat**
-- `seat_id` - `Long` PK
-- `bus_id` - FK -> Bus
-- `seat_number` - `String`
-
-**Route**
-- `route_id` - `Long` PK
-- `source_city` - `String`
-- `dest_city` - `String`
-- `distance_km` - `int`
-
-### Operational
-
-**TripSchedule**
-- `trip_id` - `Long` PK
-- `bus_id` - FK -> Bus
-- `route_id` - FK -> Route
-- `departure_time` - `LocalDateTime`
-- `arrival_time` - `LocalDateTime`
-- `fare` - `BigDecimal`
-
-### Users
-
-**UserMaster**
-- `user_id` - `Long` PK
-- `email` - `String` UNIQUE
-- `name` - `String`
-- `mobile` - `String`
-- `password` - `String`
-- `created_at` - `LocalDateTime`
-
-**UserGuest**
-- `guest_id` - `Long` PK
-- `email` - `String` UNIQUE
-- `mobile` - `String` UNIQUE
-
-### Transactions
-
-**Booking**
-- `booking_id` - `Long` PK
-- `booking_ref` - `UUID`
-- `user_id` - FK -> UserMaster, **nullable**
-- `guest_id` - FK -> UserGuest, **nullable**
-- `trip_id` - FK -> TripSchedule
-- `booking_date` - `LocalDateTime`
-- `total_amount` - `BigDecimal`
-- `booking_status` - `Enum` (PENDING, CONFIRMED, CANCELLED, EXPIRED)
-- `expires_at` - `LocalDateTime` (booking_date + 10 min)
-
-> XOR constraint enforced at DB level:
-> ```sql
-> CHECK (
->   (user_id IS NULL AND guest_id IS NOT NULL) OR
->   (user_id IS NOT NULL AND guest_id IS NULL)
-> )
-> ```
-
-**BookingSeat**
-- `booking_seat_id` - `Long` PK
-- `booking_id` - FK -> Booking
-- `trip_id` - FK -> TripSchedule
-- `seat_id` - FK -> Seat
-- UNIQUE `(trip_id, seat_id)` - prevents double-booking
-
-**Payment**
-- `payment_id` - `Long` PK
-- `booking_id` - FK -> Booking
-- `amount` - `BigDecimal`
-- `payment_mode` - `Enum` (UPI, CARD, NET_BANKING, WALLET)
-- `payment_status` - `Enum` (PENDING, SUCCESS, FAILED)
-- `transaction_id` - `String`
+3. **Run the Application:**
+   Navigate into the `backend/` directory and build/run using Gradle:
+   ```bash
+   cd backend
+   ./gradlew bootRun
+   ```
+   The backend API will start on `http://localhost:8080/api/v1`
 
 ---
 
-## Planned API
+### 2. Setting Up the Frontend
 
-> TODO — controllers and services not yet implemented.
+1. **Install Dependencies:**
+   Navigate to the `TicketSystemFront/` directory and install NPM packages:
+   ```bash
+   cd TicketSystemFront
+   npm install
+   ```
 
-### Trips
-```
-GET /api/v1/trips?source=&dest=&date=
-GET /api/v1/trips/{id}/seats
-```
+2. **Run Linter (Optional):**
+   Ensure everything is formatted and free of syntax issues:
+   ```bash
+   npm run lint
+   ```
 
-### Bookings
-```
-POST /api/v1/bookings
-```
-- If email exists in `UserMaster` -> link booking to that user
-- Otherwise -> create `UserGuest` entry, link to that
-- Seats held immediately via `PESSIMISTIC_WRITE` lock
-- `BookingStatus` set to `PENDING`, expires in 10 minutes
-- Expired bookings purged by `@Scheduled` job
-
-### Payments
-```
-POST /api/v1/payments
-```
-Confirms a `PENDING` booking → `CONFIRMED`.
-
-### Admin
-```
-POST /api/v1/admin/buses
-POST /api/v1/admin/routes
-POST /api/v1/admin/trips
-```
+3. **Launch the Dev Server:**
+   Start Vite:
+   ```bash
+   npm run dev
+   ```
+   The app will run locally at `http://localhost:5173`
 
 ---
 
-## TODO
+## Core Features
+
+### JWT Authentication & Roles
+The application uses stateful login but stateless JWT validation:
+- **Guests:** Can search for trips, view seat layouts, and make guest bookings anonymously.
+- **Passengers:** Can register a user account, log in, and book seats under their persistent profile.
+- **Administrators:** Log in to access the Admin Console, allowing them to manage physical buses, routes, and schedule timetables.
+
+### Pessimistic Seat Locking & Auto-Release Scheduler
+- When a user chooses seats and clicks "Confirm & Hold", the backend locks the selected seats using a pessimistic write lock (`PESSIMISTIC_WRITE`) and marks their status as `PENDING`.
+- Seats are held for exactly 10 minutes.
+- An `@Scheduled` task runs automatically in the backend every 5 minutes, checking the database for expired locks and releasing them back to `AVAILABLE`.
+
+---
+
+## API Documentation
+
+All API requests are prefixed with `/api/v1` (the backend servlet context path).
+
+### Authentication (`/auth`)
+
+#### `POST /auth/register`
+- Registers a new user. Administrators cannot be registered publicly.
+- **Request Body:**
+  ```json
+  {
+    "name": "passenger_username",
+    "password": "secure_password",
+    "roles": ["ROLE_USER"]
+  }
+  ```
+
+#### `POST /auth/login`
+- Authenticates credentials and returns a plain text JWT token.
+- **Request Body:**
+  ```json
+  {
+    "name": "passenger_username",
+    "password": "secure_password"
+  }
+  ```
+- **Response:** Raw JWT String (e.g. `eyJhbGciOiJIUzI1NiJ9...`)
+
+---
+
+### Operations (`/trips` & `/bookings`)
+
+#### `GET /trips`
+- Search schedules between source and destination cities on a specific date. All parameters are optional.
+- **Query Parameters:** `sourceCity`, `destinationCity`, `date` (format: `YYYY-MM-DD`)
+
+#### `GET /trips/{id}/seats`
+- Fetch the physical seat map status for a trip (`AVAILABLE`, `PENDING`, `BOOKED`).
+
+#### `POST /bookings`
+- Books/holds selected seats. Accessible by anyone.
+- **Request Body (Guest):**
+  ```json
+  {
+    "tripId": 12,
+    "seatIds": [101, 102],
+    "isGuest": true,
+    "guestInfo": {
+      "email": "passenger@domain.com",
+      "number": "9876543210"
+    },
+    "userId": null,
+    "bypassAccountCheck": false
+  }
+  ```
+- **Request Body (Registered Passenger - JWT Authenticated):**
+  ```json
+  {
+    "tripId": 12,
+    "seatIds": [101, 102],
+    "isGuest": false,
+    "guestInfo": null,
+    "userId": null,
+    "bypassAccountCheck": false
+  }
+  ```
+  > [!NOTE]
+  > When `isGuest` is `false` and `userId` is omitted, the backend dynamically resolves the user's ID from the security context of the JWT token.
+
+---
+
+### Administrative Operations (`/admin`)
+Requires JWT authenticated request with `ROLE_ADMIN` role.
+
+#### `POST /admin/buses`
+- Register a bus vehicle (max capacity: 52 seats).
+- **Request Body:**
+  ```json
+  {
+    "busNumber": "TS-09-UB-1234",
+    "busName": "Super luxury sleeper",
+    "busType": "AC Sleeper",
+    "totalSeats": 40
+  }
+  ```
+
+#### `POST /admin/routes`
+- Register a route between two cities.
+- **Request Body:**
+  ```json
+  {
+    "sourceCity": "Hyderabad",
+    "destinationCity": "Bangalore",
+    "distanceKm": 575
+  }
+  ```
+
+#### `POST /admin/trips`
+- Schedules a timetable trip, mapping a bus to a route with start/end schedules and pricing.
+- **Request Body:**
+  ```json
+  {
+    "busId": 1,
+    "routeId": 1,
+    "startTime": "2026-06-30T22:00:00",
+    "arrivalTime": "2026-07-01T06:00:00",
+    "fare": 1250.00
+  }
+  ```
+
+---
+
+## TODO Status
 
 - [x] Repositories
-- [ ] Services (booking flow, seat locking, payment, expiry scheduler)
-- [ ] Controllers
-- [ ] DTOs and request/response models
-- [ ] `@Scheduled` purge job for expired bookings
-- [ ] `@Async` email dispatch post-booking
-- [ ] Security config and role enforcement (TODO auth layer TBD)
+- [x] Services (booking flow, seat locking, payment, expiry scheduler)
+- [x] Controllers
+- [x] DTOs and request/response models
+- [x] Scheduled purge job for expired bookings (TripSeat lock auto-release)
+- [x] Async email dispatch post-booking
+- [x] Security config and role enforcement
 - [ ] Exception handling / error responses
 - [ ] Tests
-
----
-
-## Notes for Future Developers
-
-The schema is intentionally Hibernate-managed (`ddl-auto: update`) to keep iteration fast during early development review this before any production deployment.
-
-Auth is HTTP Basic for now. The integration team will own the authentication layer once active development begins.
