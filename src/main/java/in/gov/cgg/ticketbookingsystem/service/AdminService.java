@@ -3,6 +3,7 @@ package in.gov.cgg.ticketbookingsystem.service;
 import in.gov.cgg.ticketbookingsystem.exception.BusNotFoundException;
 import in.gov.cgg.ticketbookingsystem.exception.RouteNotFoundException;
 import in.gov.cgg.ticketbookingsystem.exception.TooManySeatsException;
+import in.gov.cgg.ticketbookingsystem.model.SeatStatus;
 import in.gov.cgg.ticketbookingsystem.model.core.Bus;
 import in.gov.cgg.ticketbookingsystem.model.core.Route;
 import in.gov.cgg.ticketbookingsystem.model.core.Seat;
@@ -13,10 +14,8 @@ import in.gov.cgg.ticketbookingsystem.model.dto.response.BusResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.TripResponse;
 import in.gov.cgg.ticketbookingsystem.model.operations.TripSchedule;
-import in.gov.cgg.ticketbookingsystem.repository.BusRepo;
-import in.gov.cgg.ticketbookingsystem.repository.RouteRepo;
-import in.gov.cgg.ticketbookingsystem.repository.SeatRepo;
-import in.gov.cgg.ticketbookingsystem.repository.TripScheduleRepo;
+import in.gov.cgg.ticketbookingsystem.model.operations.TripSeat;
+import in.gov.cgg.ticketbookingsystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import in.gov.cgg.ticketbookingsystem.utility.DtoMapper;
@@ -32,6 +31,7 @@ public class AdminService {
     private final RouteRepo routeRepo;
     private final TripScheduleRepo tripScheduleRepo;
     private final DtoMapper dtoMapper;
+    private final TripSeatRepo tripSeatRepo;
 
     public BusResponse addBus (BusRequest busRequest) {
 
@@ -81,6 +81,17 @@ public class AdminService {
         tripSchedule.setFare(tripRequest.fare());
 
         TripSchedule savedTrip = tripScheduleRepo.save(tripSchedule);
+        List<Seat> busSeats = seatRepo.findByBus(bus);
+
+        List<TripSeat> tripSeats = busSeats.stream().map(seat -> {
+            TripSeat tripSeat = new TripSeat();
+            tripSeat.setTripSchedule(savedTrip);
+            tripSeat.setSeat(seat);
+            tripSeat.setStatus(SeatStatus.AVAILABLE);
+            return tripSeat;
+        }).toList();
+
+        tripSeatRepo.saveAll(tripSeats);
 
         return dtoMapper.toResponse(savedTrip);
     }

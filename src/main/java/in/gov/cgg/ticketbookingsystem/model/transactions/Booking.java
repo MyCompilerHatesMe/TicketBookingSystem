@@ -3,6 +3,7 @@ package in.gov.cgg.ticketbookingsystem.model.transactions;
 
 import in.gov.cgg.ticketbookingsystem.model.SimpleStatus;
 import in.gov.cgg.ticketbookingsystem.model.operations.TripSchedule;
+import in.gov.cgg.ticketbookingsystem.model.operations.TripSeat;
 import in.gov.cgg.ticketbookingsystem.model.users.UserGuest;
 import in.gov.cgg.ticketbookingsystem.model.users.UserMaster;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -53,5 +55,8 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private SimpleStatus status;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<TripSeat> tripSeats;
 
 }
