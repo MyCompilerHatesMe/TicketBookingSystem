@@ -1,0 +1,170 @@
+.searchCard {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+
+.searchBtnWrap {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0;
+}
+
+.searchBtn {
+  height: 38px;
+  padding: 0 24px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.searchBtn:hover:not(:disabled) { background: var(--navy-light); }
+.searchBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.errorMsg {
+  background: var(--error-bg);
+  border: 1px solid #f0b8b2;
+  color: var(--error);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 14px;
+  padding: 40px 0;
+}
+
+.results { display: flex; flex-direction: column; gap: 12px; }
+
+.resultsLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+
+.tripCard {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 240px;
+}
+
+.city {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  width: 80px;
+}
+
+.city:last-child { text-align: right; }
+
+.routeLine {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 4px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gray-300);
+  flex-shrink: 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background: var(--gray-300);
+}
+
+.dur {
+  font-size: 10px;
+  color: var(--gray-500);
+  white-space: nowrap;
+  font-weight: 500;
+  padding: 0 4px;
+}
+
+.times {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+
+.timeSep { color: var(--gray-300); }
+
+.tripMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.busTag {
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.fareRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fare {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.selectBtn {
+  height: 34px;
+  padding: 0 18px;
+  background: var(--saffron);
+  color: var(--navy-dark);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.selectBtn:hover { opacity: 0.88; }

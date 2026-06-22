@@ -1,0 +1,325 @@
+.backRow { margin-bottom: 16px; }
+
+.back {
+  background: none;
+  border: none;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+.back:hover { opacity: 1; }
+
+.tripSummary {
+  background: var(--navy);
+  border-radius: 6px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summaryRoute {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.summaryCity {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.summaryArrow {
+  color: var(--saffron);
+  font-size: 18px;
+}
+
+.summaryMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.6);
+}
+
+.dot { color: rgba(255,255,255,0.3); }
+
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  align-items: start;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  padding: 20px 24px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--gray-100);
+  padding-bottom: 12px;
+}
+
+.loadingSeats {
+  color: var(--gray-500);
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.legendDot.available { background: #dff0d8; border: 1px solid #b7dfca; }
+.legendDot.selected  { background: var(--navy); }
+.legendDot.pending   { background: #fff3cd; border: 1px solid #ffd06a; }
+.legendDot.booked    { background: #f5d5d0; border: 1px solid #e8a89e; }
+
+.seatGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 8px;
+}
+
+.seat {
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.seat.available {
+  background: #dff0d8;
+  border-color: #b7dfca;
+  color: #1a5c34;
+}
+
+.seat.available:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.seat.seatSelected {
+  background: var(--navy) !important;
+  border-color: var(--navy) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,51,102,0.3);
+}
+
+.seat.pending {
+  background: #fff3cd;
+  border-color: #ffd06a;
+  color: #7a5c00;
+  cursor: not-allowed;
+}
+
+.seat.booked {
+  background: #f5d5d0;
+  border-color: #e8a89e;
+  color: #8b2f24;
+  cursor: not-allowed;
+}
+
+.selectionSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 13px;
+  color: var(--gray-700);
+}
+
+.totalFare {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* Checkout */
+.checkoutType {
+  display: flex;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.typeBtn {
+  flex: 1;
+  height: 34px;
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: var(--font);
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.typeBtnActive {
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+}
+
+.checkoutForm {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.fieldLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 5px;
+}
+
+.input {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(0,51,102,0.08);
+}
+
+.accountExistsBox {
+  background: #fff8e6;
+  border: 1px solid #ffd06a;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.accountExistsTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #7a5c00;
+  margin-bottom: 4px;
+}
+
+.accountExistsMsg {
+  font-size: 12px;
+  color: #8a6b00;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.accountExistsActions { display: flex; gap: 8px; }
+
+.bypassBtn {
+  height: 30px;
+  padding: 0 14px;
+  background: #f0a500;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+.responseBox {
+  border-radius: var(--radius);
+  border: 1px solid;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.responseSuccess { border-color: #b7dfca; background: var(--success-bg); }
+.responseError   { border-color: #f0b8b2; background: var(--error-bg); }
+
+.responseStatus {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.responseSuccess .responseStatus { color: var(--success); }
+.responseError   .responseStatus { color: var(--error); }
+
+.responseBody {
+  font-size: 11.5px;
+  font-family: 'Courier New', monospace;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.bookBtn {
+  width: 100%;
+  height: 40px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.bookBtn:hover:not(:disabled) { background: var(--navy-light); }
+.bookBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.hint {
+  font-size: 11.5px;
+  color: var(--gray-500);
+  text-align: center;
+  margin-top: 8px;
+}

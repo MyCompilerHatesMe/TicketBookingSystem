@@ -1,0 +1,65 @@
+.panel {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.01em;
+}
+
+.endpointBadge {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--gray-200);
+  border-radius: 3px;
+  overflow: hidden;
+  font-size: 11.5px;
+}
+
+.method {
+  background: var(--navy);
+  color: var(--white);
+  padding: 3px 7px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+}
+
+.path {
+  background: var(--gray-50);
+  color: var(--gray-700);
+  padding: 3px 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.desc {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+.body {
+  padding: 24px;
+}
