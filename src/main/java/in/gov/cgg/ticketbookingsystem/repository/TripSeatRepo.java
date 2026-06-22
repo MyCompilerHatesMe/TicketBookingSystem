@@ -1,7 +1,9 @@
 package in.gov.cgg.ticketbookingsystem.repository;
 
 import in.gov.cgg.ticketbookingsystem.model.operations.TripSeat;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,8 @@ public interface TripSeatRepo extends JpaRepository<TripSeat, Long> {
     @Query("UPDATE TripSeat t SET t.status = 'AVAILABLE', t.lockExpiresAt = null, t.booking = null " +
            "WHERE t.status = 'PENDING' AND t.lockExpiresAt < :now")
     void releaseExpiredLocks(@Param("now") LocalDateTime now);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT ts FROM TripSeat ts WHERE ts.tripSchedule.tripId = :tripId AND ts.seat.seatId IN :seatIds")
+    List<TripSeat> findSeatsForUpdate(@Param("tripId") Long tripId, @Param("seatIds") List<Long> seatIds);
 }
