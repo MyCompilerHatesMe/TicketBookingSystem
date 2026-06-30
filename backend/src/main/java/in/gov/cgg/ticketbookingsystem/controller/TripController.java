@@ -17,6 +17,7 @@ import java.util.List;
 public class TripController {
 
     private final TripService tripService;
+    private final in.gov.cgg.ticketbookingsystem.service.TravelPlannerService travelPlannerService;
 
     @GetMapping
     public ResponseEntity<List<TripResponse>> searchTrips(
@@ -32,5 +33,11 @@ public class TripController {
     public ResponseEntity<List<TripSeatResponse>> getSeatsForTrip(@PathVariable Long id) {
         List<TripSeatResponse> seats = tripService.getSeatsForTrip(id);
         return ResponseEntity.ok(seats);
+    }
+
+    @PostMapping("/plan")
+    public ResponseEntity<in.gov.cgg.ticketbookingsystem.model.dto.response.TravelPlanResponse> planTravel(
+            @jakarta.validation.Valid @RequestBody in.gov.cgg.ticketbookingsystem.model.dto.request.TravelPlanRequest request) {
+        return ResponseEntity.ok(travelPlannerService.planTravel(request));
     }
 }

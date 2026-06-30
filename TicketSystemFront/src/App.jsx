@@ -7,18 +7,20 @@ import TripPanel from './components/TripPanel'
 import UserView from './components/UserView'
 import LoginPage from './components/LoginPage'
 import BookingHistoryPanel from './components/BookingHistoryPanel'
+import TravelPlanner from './components/TravelPlanner'
 import { getToken, getUser, clearToken } from './auth'
 import styles from './App.module.css'
 
 const ADMIN_SECTIONS = [
-  { id: 'buses',  label: 'Bus Management',   icon: '🚌' },
-  { id: 'routes', label: 'Route Management',  icon: '🗺️' },
-  { id: 'trips',  label: 'Trip Scheduling',   icon: '📅' },
+  { id: 'buses',  label: 'Bus Management',   icon: '' },
+  { id: 'routes', label: 'Route Management',  icon: '' },
+  { id: 'trips',  label: 'Trip Scheduling',   icon: '' },
 ]
 
 const USER_SECTIONS = [
-  { id: 'search', label: 'Find & Book Buses', icon: '🔍' },
-  { id: 'history', label: 'Booking History', icon: '📜' },
+  { id: 'search', label: 'Find & Book Buses', icon: '' },
+  { id: 'plan', label: 'Travel Planner', icon: '' },
+  { id: 'history', label: 'Booking History', icon: '' },
 ]
 
 export default function App() {
@@ -64,6 +66,7 @@ export default function App() {
           {active === 'routes' && isAdmin && <RoutePanel />}
           {active === 'trips' && isAdmin && <TripPanel />}
           {active === 'search' && <UserView key="user" />}
+          {active === 'plan' && <TravelPlanner />}
           {active === 'history' && <BookingHistoryPanel user={user} />}
         </main>
       </div>

@@ -40,6 +40,7 @@ public interface DtoMapper {
     @Mapping(target = "routeId", source = "tripSchedule.route.routeId")
     @Mapping(target = "sourceCity", source = "tripSchedule.route.sourceCity")
     @Mapping(target = "destinationCity", source = "tripSchedule.route.destinationCity")
+    @Mapping(target = "distanceKm", source = "tripSchedule.route.distanceKm")
     @Mapping(target = "stops", expression = "java(mapStops(tripSchedule))")
     TripResponse toResponse(TripSchedule tripSchedule);
 

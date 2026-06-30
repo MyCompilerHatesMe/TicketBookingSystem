@@ -74,3 +74,4 @@ lerna-debug.log*
 *.env
 *.pem
 *.key
+runServer.sh

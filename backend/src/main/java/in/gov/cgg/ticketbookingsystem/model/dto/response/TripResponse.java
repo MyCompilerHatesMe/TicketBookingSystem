@@ -13,6 +13,7 @@ public record TripResponse (
         Long routeId,
         String sourceCity,
         String destinationCity,
+        int distanceKm,
         LocalDateTime startTime,
         LocalDateTime arrivalTime,
         BigDecimal fare,
