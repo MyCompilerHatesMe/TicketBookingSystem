@@ -35,19 +35,4 @@ public class BookingController {
         return ResponseEntity.ok(response);
     }
 
-    @ExceptionHandler(AccountExistsException.class)
-    public ResponseEntity<Map<String, String>> handleAccountExists(AccountExistsException ex) {
-        return ResponseEntity.status(HttpStatus.SEE_OTHER).body(Map.of(
-                "error", "ACCOUNT_EXISTS",
-                "message", ex.getMessage()
-        ));
-    }
-
-    @ExceptionHandler(SeatAlreadyOccupiedException.class)
-    public ResponseEntity<Map<String, String>> handleSeatOccupied(SeatAlreadyOccupiedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
-                "error", "SEAT_OCCUPIED",
-                "message", ex.getMessage()
-        ));
-    }
 }

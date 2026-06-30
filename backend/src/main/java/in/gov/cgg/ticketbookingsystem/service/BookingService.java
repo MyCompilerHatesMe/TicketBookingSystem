@@ -1,7 +1,6 @@
 package in.gov.cgg.ticketbookingsystem.service;
 
-import in.gov.cgg.ticketbookingsystem.exception.AccountExistsException;
-import in.gov.cgg.ticketbookingsystem.exception.SeatAlreadyOccupiedException;
+import in.gov.cgg.ticketbookingsystem.exception.*;
 import in.gov.cgg.ticketbookingsystem.model.SeatStatus;
 import in.gov.cgg.ticketbookingsystem.model.SimpleStatus;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.BookingRequest;
@@ -63,15 +62,15 @@ public class BookingService {
         } else {
             if (request.userId() != null) {
                 userMaster = userMasterRepo.findById(request.userId())
-                        .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.userId()));
+                        .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + request.userId()));
             } else {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if (authentication == null || !authentication.isAuthenticated()) {
-                    throw new RuntimeException("User is not authenticated");
+                    throw new UnauthenticatedException("User is not authenticated");
                 }
                 String username = authentication.getName();
                 AuthUser authUser = authUserRepo.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("Authenticated user not found in auth user repository: " + username));
+                        .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in auth user repository: " + username));
                 
                 userMaster = authUser.getUserMaster();
                 if (userMaster == null) {
@@ -91,7 +90,7 @@ public class BookingService {
         List<TripSeat> tripSeats = tripSeatRepo.findSeatsForUpdate(request.tripId(), request.seatIds());
 
         if (tripSeats.size() != request.seatIds().size()) {
-            throw new RuntimeException("One or more target seats do not exist on this trip schedule.");
+            throw new SeatNotFoundException("One or more target seats do not exist on this trip schedule.");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -108,7 +107,7 @@ public class BookingService {
         }
 
         TripSchedule trip = tripScheduleRepo.findById(request.tripId())
-                .orElseThrow(() -> new RuntimeException("Trip schedule not found with ID: " + request.tripId()));
+                .orElseThrow(() -> new TripNotFoundException("Trip schedule not found with ID: " + request.tripId()));
 
         BigDecimal totalAmount = trip.getFare().multiply(BigDecimal.valueOf(request.seatIds().size()));
         LocalDateTime expiryTime = now.plusMinutes(10);
@@ -150,7 +149,7 @@ public class BookingService {
         if (isLoggedIn) {
             String username = authentication.getName();
             AuthUser authUser = authUserRepo.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + username));
+                    .orElseThrow(() -> new UserNotFoundException("Authenticated user not found: " + username));
             UserMaster userMaster = authUser.getUserMaster();
             if (userMaster == null) {
                 return Collections.emptyList();
@@ -165,7 +164,7 @@ public class BookingService {
                 throw new BadCredentialsException("Invalid OTP code.");
             }
             UserGuest guest = userGuestRepo.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Guest user not found with email: " + email));
+                    .orElseThrow(() -> new UserNotFoundException("Guest user not found with email: " + email));
             bookings = bookingRepo.findByUserGuestGuestId(guest.getGuestId());
         }
 
