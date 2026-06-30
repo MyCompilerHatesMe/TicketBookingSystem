@@ -20,5 +20,7 @@ public record BookingHistoryResponse(
     LocalDateTime arrivalTime,
     String busName,
     String busNumber,
-    List<String> seatNumbers
+    List<String> seatNumbers,
+    String boardingStopName,
+    String droppingStopName
 ) {}

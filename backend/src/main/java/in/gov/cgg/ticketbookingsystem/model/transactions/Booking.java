@@ -48,6 +48,9 @@ public class Booking {
     @JoinColumn(name="trip_id", nullable = false)
     private TripSchedule trip;
 
+    private String boardingStopName;
+    private String droppingStopName;
+
     private LocalDateTime bookingTime;
     private BigDecimal total_amount;
 

@@ -11,6 +11,7 @@ import in.gov.cgg.ticketbookingsystem.model.transactions.Booking;
 import in.gov.cgg.ticketbookingsystem.model.users.UserGuest;
 import in.gov.cgg.ticketbookingsystem.model.users.UserMaster;
 import in.gov.cgg.ticketbookingsystem.model.users.AuthUser;
+import in.gov.cgg.ticketbookingsystem.model.core.RouteStop;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import in.gov.cgg.ticketbookingsystem.repository.*;
@@ -35,6 +36,7 @@ public class BookingService {
     private final UserMasterRepo userMasterRepo;
     private final UserGuestRepo userGuestRepo;
     private final AuthUserRepo authUserRepo;
+    private final RouteStopRepo routeStopRepo;
 
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
@@ -109,6 +111,33 @@ public class BookingService {
         TripSchedule trip = tripScheduleRepo.findById(request.tripId())
                 .orElseThrow(() -> new TripNotFoundException("Trip schedule not found with ID: " + request.tripId()));
 
+        String boardingStopName = null;
+        String droppingStopName = null;
+
+        if (request.boardingStopId() != null) {
+            RouteStop boardingStop = routeStopRepo.findById(request.boardingStopId())
+                    .orElseThrow(() -> new IllegalArgumentException("Boarding stop not found with ID: " + request.boardingStopId()));
+            if (!boardingStop.getRoute().getRouteId().equals(trip.getRoute().getRouteId())) {
+                throw new IllegalArgumentException("Boarding stop does not belong to the route of this trip.");
+            }
+            if (!"BOARDING".equalsIgnoreCase(boardingStop.getStopType()) && !"BOTH".equalsIgnoreCase(boardingStop.getStopType())) {
+                throw new IllegalArgumentException("Selected stop is not a boarding stop.");
+            }
+            boardingStopName = boardingStop.getStopName();
+        }
+
+        if (request.droppingStopId() != null) {
+            RouteStop droppingStop = routeStopRepo.findById(request.droppingStopId())
+                    .orElseThrow(() -> new IllegalArgumentException("Dropping stop not found with ID: " + request.droppingStopId()));
+            if (!droppingStop.getRoute().getRouteId().equals(trip.getRoute().getRouteId())) {
+                throw new IllegalArgumentException("Dropping stop does not belong to the route of this trip.");
+            }
+            if (!"DROPPING".equalsIgnoreCase(droppingStop.getStopType()) && !"BOTH".equalsIgnoreCase(droppingStop.getStopType())) {
+                throw new IllegalArgumentException("Selected stop is not a dropping stop.");
+            }
+            droppingStopName = droppingStop.getStopName();
+        }
+
         BigDecimal totalAmount = trip.getFare().multiply(BigDecimal.valueOf(request.seatIds().size()));
         LocalDateTime expiryTime = now.plusMinutes(10);
 
@@ -116,6 +145,8 @@ public class BookingService {
         booking.setUserMaster(userMaster);
         booking.setUserGuest(userGuest);
         booking.setTrip(trip);
+        booking.setBoardingStopName(boardingStopName);
+        booking.setDroppingStopName(droppingStopName);
         booking.setBookingTime(now);
         booking.setTotal_amount(totalAmount);
         booking.setExpiryTime(expiryTime);
@@ -135,7 +166,9 @@ public class BookingService {
                 savedBooking.getUuid(),
                 savedBooking.getTotal_amount(),
                 savedBooking.getStatus(),
-                savedBooking.getExpiryTime()
+                savedBooking.getExpiryTime(),
+                savedBooking.getBoardingStopName(),
+                savedBooking.getDroppingStopName()
         );
     }
 
@@ -189,7 +222,9 @@ public class BookingService {
                         b.getTrip().getBus().getBusNumber(),
                         b.getTripSeats().stream()
                                 .map(ts -> ts.getSeat().getSeatNumber())
-                                .toList()
+                                .toList(),
+                        b.getBoardingStopName(),
+                        b.getDroppingStopName()
                 ))
                 .toList();
     }

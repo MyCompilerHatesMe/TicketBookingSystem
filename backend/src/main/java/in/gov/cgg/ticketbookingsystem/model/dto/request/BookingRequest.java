@@ -8,5 +8,7 @@ public record BookingRequest(
     Boolean isGuest,
     GuestInfo guestInfo,
     Long userId,
-    Boolean bypassAccountCheck
+    Boolean bypassAccountCheck,
+    Long boardingStopId,
+    Long droppingStopId
 ) {}

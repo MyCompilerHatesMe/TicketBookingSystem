@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+// TODO: Integration team to complete payment gateway integration and entity definitions
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

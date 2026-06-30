@@ -10,5 +10,7 @@ public record BookingResponse(
     UUID uuid,
     BigDecimal totalAmount,
     SimpleStatus status,
-    LocalDateTime expiryTime
+    LocalDateTime expiryTime,
+    String boardingStopName,
+    String droppingStopName
 ) {}

@@ -17,6 +17,9 @@ export default function BookingPanel({ trip, onBack }) {
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [accountExists, setAccountExists] = useState(false)
+  
+  const [boardingStopId, setBoardingStopId] = useState('')
+  const [droppingStopId, setDroppingStopId] = useState('')
 
   useEffect(() => {
     apiGet(`/trips/${trip.tripId}/seats`, {}).then(res => {
@@ -36,15 +39,31 @@ export default function BookingPanel({ trip, onBack }) {
 
   const book = async (bypass = false) => {
     if (selected.length === 0) return
+    if (trip.stops && trip.stops.length > 0) {
+      const hasBoarding = trip.stops.some(s => s.stopType === 'BOARDING' || s.stopType === 'BOTH')
+      const hasDropping = trip.stops.some(s => s.stopType === 'DROPPING' || s.stopType === 'BOTH')
+      if (hasBoarding && !boardingStopId) {
+        alert('Please select a boarding point.')
+        return
+      }
+      if (hasDropping && !droppingStopId) {
+        alert('Please select a dropping point.')
+        return
+      }
+    }
     setLoading(true)
     setResponse(null)
     setAccountExists(false)
 
     const body = isGuest
       ? { tripId: trip.tripId, seatIds: selected, isGuest: true, userId: null,
-          guestInfo: { email: guestEmail, number: guestPhone }, bypassAccountCheck: bypass }
+          guestInfo: { email: guestEmail, number: guestPhone }, bypassAccountCheck: bypass,
+          boardingStopId: boardingStopId ? parseInt(boardingStopId, 10) : null,
+          droppingStopId: droppingStopId ? parseInt(droppingStopId, 10) : null }
       : { tripId: trip.tripId, seatIds: selected, isGuest: false,
-          userId: null, guestInfo: null, bypassAccountCheck: false }
+          userId: null, guestInfo: null, bypassAccountCheck: false,
+          boardingStopId: boardingStopId ? parseInt(boardingStopId, 10) : null,
+          droppingStopId: droppingStopId ? parseInt(droppingStopId, 10) : null }
 
     const res = await apiPost('/bookings', body)
     setLoading(false)
@@ -123,6 +142,51 @@ export default function BookingPanel({ trip, onBack }) {
         {/* Checkout */}
         <div className={styles.card}>
           <div className={styles.cardTitle}>Checkout</div>
+
+          {/* Boarding and Dropping Points */}
+          {trip.stops && trip.stops.length > 0 && (
+            <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label className={styles.fieldLabel}>Boarding Point</label>
+                <select
+                  className={styles.input}
+                  style={{ width: '100%', marginTop: 4 }}
+                  value={boardingStopId}
+                  onChange={e => setBoardingStopId(e.target.value)}
+                >
+                  <option value="">-- Choose Boarding Stop --</option>
+                  {trip.stops
+                    .filter(s => s.stopType === 'BOARDING' || s.stopType === 'BOTH')
+                    .map(s => (
+                      <option key={s.routeStopId} value={s.routeStopId}>
+                        {s.stopName} ({fmt(s.stopTime)})
+                      </option>
+                    ))
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label className={styles.fieldLabel}>Dropping Point</label>
+                <select
+                  className={styles.input}
+                  style={{ width: '100%', marginTop: 4 }}
+                  value={droppingStopId}
+                  onChange={e => setDroppingStopId(e.target.value)}
+                >
+                  <option value="">-- Choose Dropping Stop --</option>
+                  {trip.stops
+                    .filter(s => s.stopType === 'DROPPING' || s.stopType === 'BOTH')
+                    .map(s => (
+                      <option key={s.routeStopId} value={s.routeStopId}>
+                        {s.stopName} ({fmt(s.stopTime)})
+                      </option>
+                    ))
+                  }
+                </select>
+              </div>
+            </div>
+          )}
 
           <div className={styles.checkoutType}>
             <button

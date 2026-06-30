@@ -29,18 +29,14 @@ export default function BookingHistoryPanel({ user }) {
     }
   }
 
-  // ponytail: wrap state updates in timer to prevent synchronous render triggers during effects
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (user) {
-        fetchLoggedInHistory()
-      } else {
-        setStep('form')
-        setHistoryList([])
-        setError('')
-      }
-    }, 0)
-    return () => clearTimeout(timer)
+    if (user) {
+      fetchLoggedInHistory()
+    } else {
+      setStep('form')
+      setHistoryList([])
+      setError('')
+    }
   }, [user])
 
   const handleGuestSubmit = async e => {
@@ -188,6 +184,21 @@ export default function BookingHistoryPanel({ user }) {
                       <div className={styles.time}>{formatDateTime(b.arrivalTime)}</div>
                     </div>
                   </div>
+
+                  {(b.boardingStopName || b.droppingStopName) && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--gray-50)', borderRadius: 6, marginBottom: 12, fontSize: '12px' }}>
+                      {b.boardingStopName && (
+                        <div>
+                          <strong style={{ color: 'var(--gray-700)' }}>Boarding:</strong> {b.boardingStopName}
+                        </div>
+                      )}
+                      {b.droppingStopName && (
+                        <div>
+                          <strong style={{ color: 'var(--gray-700)' }}>Dropping:</strong> {b.droppingStopName}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className={styles.metaGrid}>
                     <div className={styles.metaItem}>

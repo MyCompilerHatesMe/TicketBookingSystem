@@ -19,6 +19,10 @@ import in.gov.cgg.ticketbookingsystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import in.gov.cgg.ticketbookingsystem.utility.DtoMapper;
+import in.gov.cgg.ticketbookingsystem.model.core.RouteStop;
+import in.gov.cgg.ticketbookingsystem.model.dto.request.RouteStopRequest;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteStopResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,7 @@ public class AdminService {
     private final TripScheduleRepo tripScheduleRepo;
     private final DtoMapper dtoMapper;
     private final TripSeatRepo tripSeatRepo;
+    private final RouteStopRepo routeStopRepo;
 
     public BusResponse addBus (BusRequest busRequest) {
 
@@ -64,6 +69,37 @@ public class AdminService {
     public RouteResponse addRoute (RouteRequest routeRequest) {
         Route route = dtoMapper.toEntity(routeRequest);
         return dtoMapper.toResponse(routeRepo.save(route));
+    }
+
+    @Transactional
+    public List<RouteStopResponse> addStops(Long routeId, List<RouteStopRequest> stopRequests) {
+        Route route = routeRepo.findById(routeId)
+                .orElseThrow(() -> new RouteNotFoundException("Route not found with ID: " + routeId));
+
+        // Clear existing stops
+        route.getStops().clear();
+        routeRepo.save(route);
+
+        List<RouteStop> stops = stopRequests.stream().map(req -> {
+            RouteStop stop = new RouteStop();
+            stop.setRoute(route);
+            stop.setStopName(req.stopName());
+            stop.setStopType(req.stopType().toUpperCase());
+            stop.setMinutesOffset(req.minutesOffset());
+            stop.setSequence(req.sequence());
+            return stop;
+        }).toList();
+
+        List<RouteStop> savedStops = routeStopRepo.saveAll(stops);
+
+        return savedStops.stream().map(stop -> new RouteStopResponse(
+                stop.getRouteStopId(),
+                stop.getStopName(),
+                stop.getStopType(),
+                stop.getMinutesOffset(),
+                stop.getSequence(),
+                null
+        )).toList();
     }
 
     public TripResponse addTrip (TripRequest tripRequest) {

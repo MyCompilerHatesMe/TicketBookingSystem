@@ -3,9 +3,11 @@ package in.gov.cgg.ticketbookingsystem.controller;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.BusRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.RouteRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.TripRequest;
+import in.gov.cgg.ticketbookingsystem.model.dto.request.RouteStopRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.BusResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteResponse;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.TripResponse;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.RouteStopResponse;
 import in.gov.cgg.ticketbookingsystem.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,14 @@ public class AdminController {
     @PostMapping("/routes")
     public ResponseEntity<RouteResponse> addRoute(@Valid @RequestBody RouteRequest routeRequest) {
         RouteResponse response = service.addRoute(routeRequest);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/routes/{routeId}/stops")
+    public ResponseEntity<List<RouteStopResponse>> addStops(
+            @PathVariable Long routeId,
+            @Valid @RequestBody List<RouteStopRequest> stopRequests) {
+        List<RouteStopResponse> response = service.addStops(routeId, stopRequests);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

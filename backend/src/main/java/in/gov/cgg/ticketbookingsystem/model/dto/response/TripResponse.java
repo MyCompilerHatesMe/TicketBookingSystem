@@ -2,6 +2,7 @@ package in.gov.cgg.ticketbookingsystem.model.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TripResponse (
         Long tripId,
@@ -14,6 +15,7 @@ public record TripResponse (
         String destinationCity,
         LocalDateTime startTime,
         LocalDateTime arrivalTime,
-        BigDecimal fare
+        BigDecimal fare,
+        List<RouteStopResponse> stops
 )
 {}

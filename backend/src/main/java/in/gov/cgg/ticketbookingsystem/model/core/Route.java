@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +26,7 @@ public class Route {
 
     @Column(nullable = false)
     private Integer distanceKm;
+
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RouteStop> stops;
 }
