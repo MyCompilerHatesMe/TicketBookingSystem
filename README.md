@@ -110,6 +110,17 @@ The application uses stateful login but stateless JWT validation:
 - Seats are held for exactly 10 minutes.
 - An `@Scheduled` task runs automatically in the backend every 5 minutes, checking the database for expired locks and releasing them back to `AVAILABLE`.
 
+### Route-Level Boarding & Dropping Points
+- Supports multiple pickup (boarding) and drop-off points for each route.
+- Each stop is configured with an offset time relative to the trip's start time and has absolute stop times dynamically mapped on retrieval.
+- Booking entries explicitly record the selected boarding and dropping stop names at check-out.
+
+### Multi-City Itinerary Travel Planner
+- Allows mapping a complex multi-hop travel itinerary across multiple destinations.
+- Supports both **Fixed Order** (strict sequence of cities) and **Flexible Order** (the Traveling Salesperson algorithm computes the optimal visiting order keeping the start city fixed).
+- Validates a minimum **2-hour transfer buffer** between consecutive trips.
+- Finds both the **Cheapest Route** (minimum sum of fares) and the **Shortest Route** (minimum sum of distances), allowing constraints like arrival dates.
+
 ---
 
 ## API Documentation
@@ -183,6 +194,66 @@ All API requests are prefixed with `/api/v1` (the backend servlet context path).
 
 ---
 
+### Travel Planner & Route Stops
+
+#### `POST /admin/routes/{routeId}/stops`
+- Configure pick-up and drop-off points for a route. Requires admin access.
+- **Request Body:**
+  ```json
+  [
+    {
+      "stopName": "Gachibowli",
+      "stopType": "BOARDING",
+      "minutesOffset": 0,
+      "sequence": 1
+    },
+    {
+      "stopName": "Majestic",
+      "stopType": "DROPPING",
+      "minutesOffset": 360,
+      "sequence": 2
+    }
+  ]
+  ```
+
+#### `POST /trips/plan`
+- Plan a multi-hop travel itinerary across multiple cities. Finds both the cheapest route and the shortest route, ensuring a minimum 2-hour transfer buffer.
+- **Request Body:**
+  ```json
+  {
+    "startCity": "Hyderabad",
+    "startDate": "2026-07-01",
+    "destinations": [
+      {
+        "cityName": "Bangalore",
+        "arrivalDate": "2026-07-02"
+      },
+      {
+        "cityName": "Chennai",
+        "arrivalDate": null
+      }
+    ],
+    "flexibleOrder": true
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "cheapestRoute": {
+      "trips": [ ... ],
+      "totalFare": 1600.00,
+      "totalDistance": 850
+    },
+    "shortestDistanceRoute": {
+      "trips": [ ... ],
+      "totalFare": 2000.00,
+      "totalDistance": 850
+    }
+  }
+  ```
+
+---
+
 ### Administrative Operations (`/admin`)
 Requires JWT authenticated request with `ROLE_ADMIN` role.
 
@@ -233,5 +304,5 @@ Requires JWT authenticated request with `ROLE_ADMIN` role.
 - [x] Scheduled purge job for expired bookings (TripSeat lock auto-release)
 - [x] Async email dispatch post-booking
 - [x] Security config and role enforcement
-- [ ] Exception handling / error responses
+- [x] Exception handling / error responses
 - [ ] Tests
