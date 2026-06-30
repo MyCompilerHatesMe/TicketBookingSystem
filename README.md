@@ -69,7 +69,13 @@ TicketBookingSystem/
    cd backend
    ./gradlew bootRun
    ```
-   The backend API will start on `http://localhost:8080/api/v1`
+    The backend API will start on `http://localhost:8080/api/v1`
+
+4. **Running Tests:**
+   Execute the automated JUnit 5 and Mockito unit tests in isolation (no database required):
+   ```bash
+   ./gradlew test
+   ```
 
 ---
 
@@ -305,4 +311,4 @@ Requires JWT authenticated request with `ROLE_ADMIN` role.
 - [x] Async email dispatch post-booking
 - [x] Security config and role enforcement
 - [x] Exception handling / error responses
-- [ ] Tests
+- [x] Tests
