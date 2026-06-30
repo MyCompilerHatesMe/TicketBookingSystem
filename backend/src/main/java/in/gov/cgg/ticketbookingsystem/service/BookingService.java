@@ -22,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Collections;
+import in.gov.cgg.ticketbookingsystem.model.dto.response.BookingHistoryResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @Service
 @RequiredArgsConstructor
@@ -135,5 +138,60 @@ public class BookingService {
                 savedBooking.getStatus(),
                 savedBooking.getExpiryTime()
         );
+    }
+
+    public List<BookingHistoryResponse> getBookingHistory(String email, String otp) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isLoggedIn = authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
+
+        List<Booking> bookings;
+
+        if (isLoggedIn) {
+            String username = authentication.getName();
+            AuthUser authUser = authUserRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + username));
+            UserMaster userMaster = authUser.getUserMaster();
+            if (userMaster == null) {
+                return Collections.emptyList();
+            }
+            bookings = bookingRepo.findByUserMasterUserId(userMaster.getUserId());
+        } else {
+            if (email == null || email.trim().isEmpty() || otp == null || otp.trim().isEmpty()) {
+                throw new IllegalArgumentException("Email and OTP parameters are required for guest booking history lookup.");
+            }
+            // TODO: Replace with real OTP send and verification logic
+            if (!"000000".equals(otp)) {
+                throw new BadCredentialsException("Invalid OTP code.");
+            }
+            UserGuest guest = userGuestRepo.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Guest user not found with email: " + email));
+            bookings = bookingRepo.findByUserGuestGuestId(guest.getGuestId());
+        }
+
+        return mapToHistoryResponse(bookings);
+    }
+
+    private List<BookingHistoryResponse> mapToHistoryResponse(List<Booking> bookings) {
+        return bookings.stream()
+                .map(b -> new BookingHistoryResponse(
+                        b.getId(),
+                        b.getUuid(),
+                        b.getTotal_amount(),
+                        b.getStatus(),
+                        b.getBookingTime(),
+                        b.getExpiryTime(),
+                        b.getTrip().getTripId(),
+                        b.getTrip().getRoute().getSourceCity(),
+                        b.getTrip().getRoute().getDestinationCity(),
+                        b.getTrip().getStartTime(),
+                        b.getTrip().getArrivalTime(),
+                        b.getTrip().getBus().getBusName(),
+                        b.getTrip().getBus().getBusNumber(),
+                        b.getTripSeats().stream()
+                                .map(ts -> ts.getSeat().getSeatNumber())
+                                .toList()
+                ))
+                .toList();
     }
 }
