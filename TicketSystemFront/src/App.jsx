@@ -6,6 +6,7 @@ import RoutePanel from './components/RoutePanel'
 import TripPanel from './components/TripPanel'
 import UserView from './components/UserView'
 import LoginPage from './components/LoginPage'
+import BookingHistoryPanel from './components/BookingHistoryPanel'
 import { getToken, getUser, clearToken } from './auth'
 import styles from './App.module.css'
 
@@ -17,6 +18,7 @@ const ADMIN_SECTIONS = [
 
 const USER_SECTIONS = [
   { id: 'search', label: 'Find & Book Buses', icon: '🔍' },
+  { id: 'history', label: 'Booking History', icon: '📜' },
 ]
 
 export default function App() {
@@ -62,6 +64,7 @@ export default function App() {
           {active === 'routes' && isAdmin && <RoutePanel />}
           {active === 'trips' && isAdmin && <TripPanel />}
           {active === 'search' && <UserView key="user" />}
+          {active === 'history' && <BookingHistoryPanel user={user} />}
         </main>
       </div>
     </div>
