@@ -5,8 +5,11 @@ import styles from './LoginPage.module.css'
 
 export default function LoginPage({ onLoginSuccess, onCancel }) {
   const [isRegister, setIsRegister] = useState(false)
-  const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [number, setNumber] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,9 +22,13 @@ export default function LoginPage({ onLoginSuccess, onCancel }) {
 
     try {
       if (isRegister) {
+        // ponytail: submit all user master fields during registration
         const res = await apiPost('/auth/register', {
-          name,
+          username,
           password,
+          name,
+          email,
+          number,
           roles: ['ROLE_USER'],
         })
 
@@ -35,7 +42,7 @@ export default function LoginPage({ onLoginSuccess, onCancel }) {
         }
       } else {
         const res = await apiPost('/auth/login', {
-          name,
+          username,
           password,
         })
 
@@ -81,13 +88,13 @@ export default function LoginPage({ onLoginSuccess, onCancel }) {
             {success && <div className={styles.successBox}>{success}</div>}
 
             <div className={styles.formGroup}>
-              <label className={styles.label} htmlFor="name">Username</label>
+              <label className={styles.label} htmlFor="username">Username</label>
               <input
                 className={styles.input}
                 type="text"
-                id="name"
-                value={name}
-                onChange={e => setName(e.target.value)}
+                id="username"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
                 placeholder="Enter username"
                 required
                 disabled={loading}
@@ -107,6 +114,52 @@ export default function LoginPage({ onLoginSuccess, onCancel }) {
                 disabled={loading}
               />
             </div>
+
+            {isRegister && (
+              <>
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="name">Full Name</label>
+                  <input
+                    className={styles.input}
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Enter full name"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="email">Email Address</label>
+                  <input
+                    className={styles.input}
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Enter email address"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label} htmlFor="number">Mobile Number</label>
+                  <input
+                    className={styles.input}
+                    type="tel"
+                    id="number"
+                    value={number}
+                    onChange={e => setNumber(e.target.value)}
+                    placeholder="Enter mobile number"
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </>
+            )}
 
             <button className={styles.submitBtn} type="submit" disabled={loading}>
               {loading ? 'Processing...' : isRegister ? 'Register' : 'Log In'}

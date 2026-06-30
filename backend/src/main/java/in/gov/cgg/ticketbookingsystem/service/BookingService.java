@@ -77,10 +77,10 @@ public class BookingService {
                     userMaster.setEmail(email);
                     userMaster.setName(username);
                     userMaster.setCreatedOn(LocalDateTime.now());
+                    userMaster.setAuthUser(authUser); // map owning side
                     userMaster = userMasterRepo.save(userMaster);
                     
-                    authUser.setUserMaster(userMaster);
-                    authUserRepo.save(authUser);
+                    authUser.setUserMaster(userMaster); // synchronize in-memory ref
                 }
             }
         }

@@ -6,8 +6,11 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.Set;
 
 public record RegisterRequest(
-        @NotBlank(message = "Register request name must not be blank") String name,
+        @NotBlank(message = "Register request username must not be blank") String username,
         @NotBlank(message = "Register request password must not be blank") String password,
+        @NotBlank(message = "Register request name must not be blank") String name,
+        @NotBlank(message = "Register request email must not be blank") String email,
+        @NotBlank(message = "Register request number must not be blank") String number,
         @NotEmpty(message = "At least one role must be provided") Set<String> roles
 ) {
 }

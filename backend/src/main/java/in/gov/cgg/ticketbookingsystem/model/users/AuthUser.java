@@ -22,8 +22,7 @@ public class AuthUser {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne
-    @JoinColumn(name = "userId")
+    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL)
     private UserMaster userMaster;
 
     @ElementCollection(fetch = FetchType.EAGER)

@@ -6,6 +6,7 @@ import in.gov.cgg.ticketbookingsystem.model.dto.request.LoginRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.request.RegisterRequest;
 import in.gov.cgg.ticketbookingsystem.model.dto.response.RegisterResponse;
 import in.gov.cgg.ticketbookingsystem.model.users.AuthUser;
+import in.gov.cgg.ticketbookingsystem.model.users.UserMaster;
 import in.gov.cgg.ticketbookingsystem.repository.AuthUserRepo;
 import in.gov.cgg.ticketbookingsystem.security.SecurityUser;
 import in.gov.cgg.ticketbookingsystem.utility.DtoMapper;
@@ -48,7 +49,16 @@ public class AuthService {
         );
 
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setUsername(request.name());
+        user.setUsername(request.username());
+
+        UserMaster userMaster = new UserMaster();
+        userMaster.setName(request.name());
+        userMaster.setEmail(request.email());
+        userMaster.setNumber(request.number());
+        userMaster.setCreatedOn(java.time.LocalDateTime.now());
+        userMaster.setAuthUser(user);
+
+        user.setUserMaster(userMaster);
 
         AuthUser saved;
         try {
@@ -63,10 +73,10 @@ public class AuthService {
     public String login (LoginRequest request) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.name(), request.password())
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
             return jwtService.generateToken(
-                    request.name(),
+                    request.username(),
                     // authUser will never be null, auth guarantees a "fully authenticated object"
                     // or AuthenticationException.
                     ((SecurityUser) auth.getPrincipal()).authUser().getRoles()

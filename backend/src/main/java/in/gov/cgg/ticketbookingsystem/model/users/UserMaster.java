@@ -24,6 +24,10 @@ public class UserMaster {
 
     private String number;
     private String name;
-    private String password;
+
+    @OneToOne
+    @JoinColumn(name = "authId")
+    private AuthUser authUser;
+
     private LocalDateTime createdOn;
 }
