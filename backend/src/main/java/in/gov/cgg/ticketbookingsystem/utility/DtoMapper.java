@@ -31,6 +31,7 @@ public interface DtoMapper {
     @Mapping(target = "stops", ignore = true)
     Route toEntity(RouteRequest routeRequest);
 
+    @Mapping(target = "stops", expression = "java(mapRouteStops(route.getStops()))")
     RouteResponse toResponse(Route route);
 
     @Mapping(target = "busId", source = "tripSchedule.bus.busId")
@@ -58,6 +59,23 @@ public interface DtoMapper {
                         stop.getMinutesOffset(),
                         stop.getSequence(),
                         tripSchedule.getStartTime().plusMinutes(stop.getMinutesOffset())
+                ))
+                .sorted(java.util.Comparator.comparing(RouteStopResponse::sequence))
+                .toList();
+    }
+
+    default List<RouteStopResponse> mapRouteStops(List<RouteStop> stops) {
+        if (stops == null) {
+            return java.util.Collections.emptyList();
+        }
+        return stops.stream()
+                .map(stop -> new RouteStopResponse(
+                        stop.getRouteStopId(),
+                        stop.getStopName(),
+                        stop.getStopType(),
+                        stop.getMinutesOffset(),
+                        stop.getSequence(),
+                        null
                 ))
                 .sorted(java.util.Comparator.comparing(RouteStopResponse::sequence))
                 .toList();

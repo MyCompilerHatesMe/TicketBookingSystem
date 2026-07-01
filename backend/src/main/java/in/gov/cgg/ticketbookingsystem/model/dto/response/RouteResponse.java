@@ -4,6 +4,7 @@ public record RouteResponse (
         int routeId,
         String sourceCity,
         String destinationCity,
-        int distanceKm
+        int distanceKm,
+        java.util.List<RouteStopResponse> stops
 )
 {}
