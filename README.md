@@ -127,11 +127,26 @@ The application uses stateful login but stateless JWT validation:
 - Validates a minimum **2-hour transfer buffer** between consecutive trips.
 - Finds both the **Cheapest Route** (minimum sum of fares) and the **Shortest Route** (minimum sum of distances), allowing constraints like arrival dates.
 
+### Tourism Place Recommendation (Foursquare Integration)
+- Resolves tourism recommendations for any target city by integrating the Foursquare Places API.
+- Caches results locally for 30 days to optimize API usage.
+- Updates metadata (places information) upon cache expiration while preserving original city coordinates.
+
 ---
 
 ## API Documentation
 
 All API requests are prefixed with `/api/v1` (the backend servlet context path).
+
+### Tourism Data (`/tourism`)
+
+#### `GET /tourism`
+- Fetches tourism points of interest recommendations for a given city.
+- **Query Parameters:** `city` (e.g. `city=hyderabad`)
+- **Response:**
+  Returns the cached `CityTourismData` object containing the database ID, city name, coordinates, `lastUpdated` timestamp, and the raw Foursquare JSON response string under `placesData`.
+
+---
 
 ### Authentication (`/auth`)
 
