@@ -92,6 +92,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("VALIDATION_FAILED", message));
     }
 
+    // 502 Bad Gateway
+    @ExceptionHandler(TourismApiException.class)
+    public ResponseEntity<ErrorResponse> handleTourismApiException(TourismApiException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(new ErrorResponse("EXTERNAL_API_ERROR", ex.getMessage()));
+    }
+
     // 500 Fallback
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
