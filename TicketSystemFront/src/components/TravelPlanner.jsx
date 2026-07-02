@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styles from './TravelPlanner.module.css'
-import { apiPost } from '../api'
+import { apiPost, apiGet } from '../api'
 
 export default function TravelPlanner() {
   const [startCity, setStartCity] = useState('')
@@ -10,6 +10,52 @@ export default function TravelPlanner() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  // Modal states
+  const [modalCity, setModalCity] = useState(null)
+  const [modalSpots, setModalSpots] = useState([])
+  const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState(null)
+
+  const handleCityClick = async (city) => {
+    setModalCity(city)
+    setModalLoading(true)
+    setModalError(null)
+    setModalSpots([])
+
+    try {
+      const res = await apiGet('/tourism', { city })
+      if (res.status === 401 || res.status === 403) {
+        setModalError('You must be logged in to view tourism data.')
+        return
+      }
+      if (res.status >= 200 && res.status < 300) {
+        if (res.data && res.data.placesData) {
+          const parsed = JSON.parse(res.data.placesData)
+          if (parsed.results && parsed.results.length > 0) {
+            // Shuffle and pick 3-4 spots
+            const shuffled = [...parsed.results].sort(() => 0.5 - Math.random())
+            const count = Math.floor(Math.random() * 2) + 3 // 3 or 4
+            setModalSpots(shuffled.slice(0, count))
+          } else {
+            setModalError('No spots found for this city.')
+          }
+        } else {
+          setModalError('No data available for this city.')
+        }
+      } else {
+        throw new Error(res.data?.message || 'Failed to fetch tourism data')
+      }
+    } catch (err) {
+      setModalError(err.message)
+    } finally {
+      setModalLoading(false)
+    }
+  }
+
+  const closeModal = () => {
+    setModalCity(null)
+  }
 
   const handleAddDestination = () => {
     setDestinations([...destinations, { cityName: '', arrivalDate: '' }])
@@ -70,7 +116,16 @@ export default function TravelPlanner() {
           {option.trips.map((trip, i) => (
             <div key={i} className={styles.tripItem}>
               <div className={styles.tripHeader}>
-                <strong>Hop {i + 1}: {trip.sourceCity} ➔ {trip.destinationCity}</strong>
+                <strong>
+                  Hop {i + 1}:{' '}
+                  <span className={styles.cityLink} onClick={() => handleCityClick(trip.sourceCity)}>
+                    {trip.sourceCity}
+                  </span>
+                  {' '}➔{' '}
+                  <span className={styles.cityLink} onClick={() => handleCityClick(trip.destinationCity)}>
+                    {trip.destinationCity}
+                  </span>
+                </strong>
               </div>
               <div className={styles.tripDetails}>
                 <span>Bus: {trip.busName} ({trip.busType})</span>
@@ -175,6 +230,34 @@ export default function TravelPlanner() {
               {renderItinerary(results.shortestDistanceRoute, "Shortest Route")}
             </div>
           )}
+        </div>
+      )}
+
+      {modalCity && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={closeModal}>✕</button>
+            <h3 className={styles.modalTitle}>Top Spots in {modalCity}</h3>
+            
+            {modalLoading ? (
+              <div className={styles.loadingSpots}>Finding the best spots...</div>
+            ) : modalError ? (
+              <div className={styles.errorSpots}>{modalError}</div>
+            ) : (
+              <ul className={styles.spotsList}>
+                {modalSpots.map((spot, i) => (
+                  <li key={i} className={styles.spotItem}>
+                    <strong>{spot.name}</strong>
+                    {spot.location && spot.location.formatted_address && (
+                      <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
+                        {spot.location.formatted_address}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       )}
     </div>
