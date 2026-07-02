@@ -271,6 +271,31 @@
   color: var(--gray-700);
 }
 
+.tripActions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.selectSeatsBtn {
+  height: 32px;
+  padding: 0 16px;
+  background: var(--white);
+  color: var(--navy);
+  border: 1px solid var(--navy);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.selectSeatsBtn:hover {
+  background: var(--navy);
+  color: var(--white);
+}
+
 .modalOverlay {
   position: fixed;
   top: 0;

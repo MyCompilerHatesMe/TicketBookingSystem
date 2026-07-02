@@ -28,6 +28,26 @@ export default function BookingPanel({ trip, onBack }) {
     })
   }, [trip.tripId])
 
+  const [redirectCountdown, setRedirectCountdown] = useState(null)
+
+  useEffect(() => {
+    let timer;
+    if (response && response.status >= 200 && response.status < 300) {
+      setRedirectCountdown(5);
+      timer = setInterval(() => {
+        setRedirectCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            if (onBack) onBack();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [response, onBack])
+
   const toggleSeat = seat => {
     if (seat.status !== 'AVAILABLE') return
     setSelected(sel =>
@@ -235,6 +255,12 @@ export default function BookingPanel({ trip, onBack }) {
             <div className={`${styles.responseBox} ${response.status >= 400 ? styles.responseError : styles.responseSuccess}`}>
               <div className={styles.responseStatus}>HTTP {response.status} {response.statusText}</div>
               <pre className={styles.responseBody}>{JSON.stringify(response.data, null, 2)}</pre>
+            </div>
+          )}
+
+          {redirectCountdown !== null && (
+            <div style={{ marginTop: 16, textAlign: 'center', color: 'var(--success)', fontWeight: 'bold', fontSize: '14px', fontFamily: 'var(--font)' }}>
+              Redirecting in {redirectCountdown}...
             </div>
           )}
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import styles from './TravelPlanner.module.css'
 import { apiPost, apiGet } from '../api'
+import BookingPanel from './BookingPanel'
 
 export default function TravelPlanner() {
   const [startCity, setStartCity] = useState('')
@@ -10,6 +11,9 @@ export default function TravelPlanner() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  // Booking state
+  const [selectedTripForBooking, setSelectedTripForBooking] = useState(null)
 
   // Modal states
   const [modalCity, setModalCity] = useState(null)
@@ -133,9 +137,29 @@ export default function TravelPlanner() {
                 <span>Arrives: {new Date(trip.arrivalTime).toLocaleString()}</span>
                 <span>₹{trip.fare} | {trip.distanceKm} km</span>
               </div>
+              <div className={styles.tripActions}>
+                <button 
+                  className={styles.selectSeatsBtn}
+                  onClick={() => setSelectedTripForBooking(trip)}
+                >
+                  Select Seats
+                </button>
+              </div>
             </div>
           ))}
         </div>
+      </div>
+    )
+  }
+
+
+  if (selectedTripForBooking) {
+    return (
+      <div className={styles.container}>
+        <BookingPanel 
+          trip={selectedTripForBooking} 
+          onBack={() => setSelectedTripForBooking(null)} 
+        />
       </div>
     )
   }
